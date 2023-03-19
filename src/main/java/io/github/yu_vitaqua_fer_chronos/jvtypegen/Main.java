@@ -6,22 +6,22 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] descs) {
         Gson gson = new Gson();
 
-        Set<Class<?>> needsAnalysis = new HashSet<>();
         for (String descriptor : descs) {
             System.out.println(gson.toJson(analyseClass(descriptor)));
         }
     }
 
-    public static ClassInfo analyseClass(String descriptor) {
+    private static ClassInfo analyseClass(String descriptor) {
         String clsDesc = descriptor;
         int arrayDepth = 0;
 
@@ -60,11 +60,12 @@ public class Main {
 
             boolean isStatic = Modifier.isStatic(m.getModifiers());
 
-            HashMap<String, String> params = new HashMap<>();
+            LinkedHashMap<String, String> params = new LinkedHashMap<>();
 
             for (Parameter p : m.getParameters()) {
                 params.put(p.getName(), p.getType().getSimpleName());
             }
+
 
             methods.add(new ClassInfo.MethodInfo(methodName, params, returnType, isStatic));
         }
