@@ -1,19 +1,58 @@
 package io.github.yu_vitaqua_fer_chronos.jvtypegen;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
 import java.lang.reflect.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] descs) {
         // Iterates through all arguments given, accepts class descriptors
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         for (String descriptor : descs) {
             // Prints the serialised `ClassInfo` class returned from `analyseClass`
-            System.out.println(gson.toJson(analyseClass(descriptor)));
+            Main.saveJsonToFile(descriptor, gson.toJson(analyseClass(descriptor)));
+        }
+    }
+
+    private static void saveJsonToFile(String descriptor, String content) {
+        String fileName = descriptor;
+
+        // Removes any `[` indicating an array
+        while (fileName.startsWith("[")) {
+            fileName = fileName.substring(1);
+        }
+
+        // `L` means a JVM type, needs to be stripped for analysis
+        if (fileName.startsWith("L")) {
+            fileName = fileName.substring(1);
+        }
+
+        // `;` means the end of a type descriptor, needs to be stripped for analysis
+        if (fileName.endsWith(";")) {
+            fileName = fileName.substring(0, fileName.length()-1);
+        }
+
+        // Innerclasses are also files
+        fileName = fileName.replace('$', '/');
+        // Since we're saving JSON, use the correct format
+        fileName += ".json";
+        // Cleaner save location
+        fileName = "json/" + fileName;
+
+        Path savePath = Paths.get("output", fileName.split("/"));
+
+        try {
+            Files.createDirectories(savePath.getParent());
+            Files.writeString(savePath, content);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to write to `" + savePath + "` for some reason!", e);
         }
     }
 
@@ -34,7 +73,7 @@ public class Main {
         }
 
         // `;` means the end of a type descriptor, needs to be stripped for analysis
-        if (descriptor.endsWith(";")) {
+        if (clsDesc.endsWith(";")) {
             clsDesc = clsDesc.substring(0, clsDesc.length()-1);
         }
 
