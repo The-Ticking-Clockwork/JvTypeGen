@@ -22,7 +22,7 @@ public class Main {
     }
 
     private static void saveJsonToFile(String descriptor, String content) {
-        String fileName = descriptor;
+        String fileName = descriptor.replace('.', '/');
 
         // Removes any `[` indicating an array
         while (fileName.startsWith("[")) {
