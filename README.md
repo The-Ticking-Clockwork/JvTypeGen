@@ -18,10 +18,11 @@ inputs (note: The semicolon should be omitted due to how Linux handles inputs, b
   - `java.lang.ClassLoader`
   - `Ljava/security/SecureClassLoader`
 
+If you are serialising an innerclass, make sure you escape the `$` character, otherwise (on Linux) shell substitution will take place and leave you confused.
+
 ## Priorities
 [ ] Implement generic reading (possible according to
     https://stackoverflow.com/questions/1901164/get-type-of-a-generic-parameter-in-java-with-reflection)
-[ ] Fix innerclass parsing
 [ ] Implement TypeScript type def generation
 
 ## Possible Goals
