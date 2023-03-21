@@ -146,7 +146,7 @@ public class Main {
 
         for (Method m : cls.getMethods()) {
             String methodName = m.getName();
-            String returnType = m.getReturnType().getSimpleName();
+            String returnType = m.getReturnType().getName();
 
             boolean isStatic = Modifier.isStatic(m.getModifiers());
 
